@@ -276,3 +276,78 @@ In this example, the `__str__` method provides a user-friendly string representa
 By understanding and effectively using magic methods, you can create more powerful and flexible classes in Python, making your codebase more robust and maintainable.
 
 [1](https://amdcloud.sharepoint.com/sites/sgppeo/infra/ttech/Shared%20Documents1/Programming/Python/Learning_Python_4th_Edition.pdf?web=1): [Python's Magic Methods: Leverage Their Power in Your Classes](https://realpython.com/python-magic-methods/)
+
+The `__str__` and `__repr__` magic methods in Python are both used to provide string representations of objects, but they serve different purposes and are intended for different audiences.
+
+### `__str__` Method
+
+The `__str__` method is used to define the "informal" or nicely printable string representation of an object. This method is called by the `str()` built-in function and the `print()` function to convert the object into a string that is meant to be readable and user-friendly.
+
+### `__repr__` Method
+
+The `__repr__` method is used to define the "official" string representation of an object. This method is called by the `repr()` built-in function and is intended to provide a detailed and unambiguous representation of the object that can ideally be used to recreate the object. It is mainly used for debugging and development.
+
+### Key Differences
+
+1. **Purpose**:
+   - `__str__`: Provides a readable and user-friendly string representation.
+   - `__repr__`: Provides a detailed and unambiguous string representation for debugging.
+
+2. **Audience**:
+   - `__str__`: Intended for end-users.
+   - `__repr__`: Intended for developers.
+
+3. **Usage**:
+   - `__str__`: Called by `str()` and `print()`.
+   - `__repr__`: Called by `repr()` and used in the interactive interpreter.
+
+### Example with Comments
+
+Here's an example to illustrate the differences between `__str__` and `__repr__`:
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def __str__(self):
+        # This method returns a user-friendly string representation of the object
+        return f"{self.name}, {self.age} years old"
+
+    def __repr__(self):
+        # This method returns a detailed and unambiguous string representation of the object
+        return f"Person(name={self.name!r}, age={self.age!r})"
+
+# Example usage
+p = Person("Alice", 30)
+
+# Using __str__ method
+print(p)  # Output: Alice, 30 years old
+
+# Using __repr__ method
+print(repr(p))  # Output: Person(name='Alice', age=30)
+```
+
+### Detailed Explanation
+
+1. **Initialization**:
+   - The `Person` class has an `__init__` method that initializes the `name` and `age` attributes.
+
+2. **__str__ Method**:
+   - The `__str__` method returns a string that is meant to be readable and user-friendly. In this case, it returns a string in the format "name, age years old".
+
+3. **__repr__ Method**:
+   - The `__repr__` method returns a string that provides a detailed and unambiguous representation of the object. It includes the class name and the values of the attributes in a format that can ideally be used to recreate the object. The `!r` in the format string ensures that the output string uses `repr()` instead of `str()`.
+
+4. **Usage**:
+   - When you use the `print()` function, it calls the `__str__` method and prints "Alice, 30 years old".
+   - When you use the `repr()` function, it calls the `__repr__` method and prints "Person(name='Alice', age=30)".
+
+### Best Practices
+
+1. **Implement Both Methods**: It's a good practice to implement both `__str__` and `__repr__` methods in your classes to provide meaningful string representations for both end-users and developers.
+2. **Use `__repr__` for Debugging**: The `__repr__` method should provide enough information to recreate the object, making it useful for debugging.
+3. **Use `__str__` for User-Friendly Output**: The `__str__` method should provide a readable and user-friendly string representation of the object.
+
+By understanding and effectively using the `__str__` and `__repr__` methods, you can create more intuitive and maintainable classes in Python.
