@@ -83,3 +83,151 @@ Consider the following example where we apply all SOLID principles to the **Paym
 - Using these principles in your code makes it easier to adapt to changing requirements, test individual components, and prevent code that is difficult to maintain.
 
 By incorporating SOLID principles into your development practices, you can build robust and future-proof applications that stand the test of time.
+
+Certainly! Below is a simple Python module that demonstrates a **wrong implementation** of the **SOLID principles** followed by the **correct implementation**.
+
+### **Problem Scenario**
+Let's imagine we're creating a module for handling different types of **shapes** (e.g., `Circle`, `Rectangle`) and calculating their **area**.
+
+#### **1. Wrong Implementation (Breaking SOLID Principles)**
+
+This initial implementation will violate the **SOLID** principles by having a single class handle all the operations without proper separation of concerns, abstraction, and extensibility.
+
+```python
+# Wrong Implementation (Violates SOLID Principles)
+class Shape:
+    def __init__(self, shape_type):
+        self.shape_type = shape_type
+        if shape_type == "circle":
+            self.radius = 5
+        elif shape_type == "rectangle":
+            self.length = 5
+            self.width = 10
+        else:
+            raise ValueError("Unknown shape type")
+
+    def area(self):
+        if self.shape_type == "circle":
+            return 3.14 * (self.radius ** 2)
+        elif self.shape_type == "rectangle":
+            return self.length * self.width
+        else:
+            raise ValueError("Unknown shape type")
+
+# Usage
+shape = Shape("circle")
+print("Circle Area:", shape.area())
+
+shape = Shape("rectangle")
+print("Rectangle Area:", shape.area())
+```
+
+### **Issues with the Above Code:**
+- **Single Responsibility Principle (SRP)**: `Shape` class is responsible for both the creation of shapes and calculating their area, violating SRP.
+- **Open/Closed Principle (OCP)**: To add more shapes (e.g., `Triangle`), we need to modify the `Shape` class.
+- **Liskov Substitution Principle (LSP)**: The design does not allow easy extension for new shape classes that could be used interchangeably.
+- **Interface Segregation Principle (ISP)**: `Shape` class forces every shape to implement area calculation in a single, monolithic method.
+- **Dependency Inversion Principle (DIP)**: The class is tightly coupled to specific shape types (e.g., `circle`, `rectangle`).
+
+---
+
+#### **2. Correct Implementation (SOLID Principles Applied)**
+
+Let's refactor the code to follow **SOLID** principles correctly.
+
+```python
+from abc import ABC, abstractmethod
+
+# 1. **Single Responsibility Principle (SRP)**: Create a class for each responsibility.
+# 2. **Open/Closed Principle (OCP)**: The code should be open for extension but closed for modification.
+# 3. **Liskov Substitution Principle (LSP)**: Subtypes should be substitutable for their base types.
+# 4. **Interface Segregation Principle (ISP)**: Clients should not be forced to depend on methods they don't use.
+# 5. **Dependency Inversion Principle (DIP)**: High-level modules should not depend on low-level modules.
+
+# Abstract Base Class (Abstract Interface for Shapes)
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+# Concrete Circle Class
+class Circle(Shape):
+    def __init__(self, radius):
+        self.radius = radius
+
+    def area(self):
+        return 3.14 * (self.radius ** 2)
+
+# Concrete Rectangle Class
+class Rectangle(Shape):
+    def __init__(self, length, width):
+        self.length = length
+        self.width = width
+
+    def area(self):
+        return self.length * self.width
+
+# Concrete Triangle Class (new shape can be added easily, adhering to OCP)
+class Triangle(Shape):
+    def __init__(self, base, height):
+        self.base = base
+        self.height = height
+
+    def area(self):
+        return 0.5 * self.base * self.height
+
+# High-level module that works with shapes through abstraction (DIP)
+class AreaCalculator:
+    def __init__(self, shape: Shape):
+        self.shape = shape
+
+    def calculate_area(self):
+        return self.shape.area()
+
+# Usage
+circle = Circle(5)
+rectangle = Rectangle(5, 10)
+triangle = Triangle(4, 6)
+
+# Dependency Injection: We pass the concrete shape classes to AreaCalculator, following DIP
+calculator = AreaCalculator(circle)
+print("Circle Area:", calculator.calculate_area())
+
+calculator = AreaCalculator(rectangle)
+print("Rectangle Area:", calculator.calculate_area())
+
+calculator = AreaCalculator(triangle)
+print("Triangle Area:", calculator.calculate_area())
+```
+
+---
+
+### **Explanation of Correct Implementation (SOLID)**
+
+1. **Single Responsibility Principle (SRP)**:
+   - The `Circle`, `Rectangle`, and `Triangle` classes are now only responsible for storing shape-specific data and calculating their area.
+   - The `AreaCalculator` class is responsible only for calculating the area of any shape.
+
+2. **Open/Closed Principle (OCP)**:
+   - To add new shapes (like `Triangle`), we don't need to modify the existing `AreaCalculator` or other shape classes. We simply create a new subclass of `Shape` and implement the `area()` method.
+
+3. **Liskov Substitution Principle (LSP)**:
+   - We can replace any shape object (`Circle`, `Rectangle`, `Triangle`) with another shape object in the `AreaCalculator`, and it will still work as expected without breaking functionality.
+
+4. **Interface Segregation Principle (ISP)**:
+   - The `Shape` class is now an abstract class that defines only the `area()` method. Each specific shape implements this method without being forced to implement other unrelated methods.
+
+5. **Dependency Inversion Principle (DIP)**:
+   - The `AreaCalculator` depends on the abstraction (`Shape`) rather than concrete implementations like `Circle`, `Rectangle`, or `Triangle`. This allows for easy substitution of different shape classes without modifying `AreaCalculator`.
+
+---
+
+### **Summary of the Key Points**
+
+- **SRP**: Each class has one responsibility.
+- **OCP**: New shapes can be added without modifying existing code.
+- **LSP**: Subclasses (`Circle`, `Rectangle`, `Triangle`) can be used interchangeably.
+- **ISP**: The interface is minimal, with only the `area` method being required.
+- **DIP**: `AreaCalculator` depends on the abstraction `Shape`, not concrete classes like `Circle` or `Rectangle`.
+
+This design ensures that the system is easy to maintain, extend, and test, following the **SOLID** principles.
