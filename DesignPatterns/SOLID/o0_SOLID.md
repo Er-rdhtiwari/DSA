@@ -6,7 +6,7 @@ The **SOLID** principles are a set of five design principles that help create so
 
 ### **1. Single Responsibility Principle (SRP)**
 
-**Definition**: A class should have only one reason to change, meaning it should only have one job or responsibility.
+**Definition**: A class should have only one reason to change, meaning it should only have one job (Primary Responsibility not Secondary Responsibility) or responsibility.
 
 - **Why it matters**: When classes are focused on a single responsibility, they are easier to understand, test, and maintain.
 - **Example**: A `PaymentProcessor` class should focus solely on processing payments. If it starts handling logging, reporting, or user authentication, it violates SRP.
