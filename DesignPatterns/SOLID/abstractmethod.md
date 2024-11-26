@@ -174,3 +174,266 @@ def test_abstract_class_instantiation():
   - Common in scenarios like payment gateways, file handlers, database adapters, etc., where multiple implementations share the same interface.
 
 This makes `@abstractmethod` a critical tool in designing modular, maintainable, and extensible systems.
+
+### Why Use `@property` Decorator in Python?
+
+The `@property` decorator in Python is used to define methods that act like attributes. It allows for encapsulation and controlled access to an object's attributes while providing a clean interface. 
+
+---
+
+### Benefits of Using `@property`
+1. **Encapsulation**:
+   - Enables control over how attributes are accessed or modified without exposing them directly.
+   
+2. **Readability**:
+   - Simplifies access to methods by allowing them to be accessed like attributes.
+   
+3. **Backward Compatibility**:
+   - You can refactor attributes into methods without breaking the interface.
+
+4. **Data Validation**:
+   - Enables validation of values before setting them.
+
+---
+
+### Common Mistakes to Avoid
+
+1. **Not Using Setter/Getter Properly**:
+   - Forgetting to define a setter or getter when needed leads to incomplete encapsulation.
+
+2. **Exposing Internal Logic**:
+   - Overloading `@property` methods with too much logic can reduce clarity.
+
+3. **Confusion with Regular Methods**:
+   - Treating `@property` as a method rather than an attribute.
+
+4. **Accessing a Property in `__init__`**:
+   - Accessing a property that depends on attributes not yet initialized can cause errors.
+
+5. **Overuse**:
+   - Using `@property` for every attribute unnecessarily increases complexity.
+
+---
+
+### Relation Between `@property` and Abstract Methods
+
+- **Difference**:
+  - The `@property` decorator is used for implementing getters, setters, and deleters for an attribute.
+  - Abstract methods (via `@abstractmethod`) enforce method implementation in subclasses and are part of the `abc` module.
+
+- **Relation**:
+  - They can work together. For example, abstract properties can enforce the implementation of specific getter or setter behaviors in subclasses.
+
+---
+
+### Python Code Example with `@property`
+
+#### Code Implementation
+
+```python
+from abc import ABC, abstractmethod
+
+class Employee(ABC):
+    """
+    Abstract base class for employees.
+    """
+
+    @property
+    @abstractmethod
+    def salary(self):
+        pass
+
+    @salary.setter
+    @abstractmethod
+    def salary(self, value):
+        pass
+
+
+class FullTimeEmployee(Employee):
+    """
+    Represents a full-time employee.
+    """
+
+    def __init__(self, name, salary):
+        self._name = name
+        self._salary = salary
+
+    @property
+    def salary(self):
+        return self._salary
+
+    @salary.setter
+    def salary(self, value):
+        if value < 30000:
+            raise ValueError("Salary must be at least $30,000 for full-time employees.")
+        self._salary = value
+
+# Usage
+employee = FullTimeEmployee("John Doe", 50000)
+print(employee.salary)  # Output: 50000
+
+employee.salary = 60000
+print(employee.salary)  # Output: 60000
+
+try:
+    employee.salary = 25000  # Should raise ValueError
+except ValueError as e:
+    print(e)
+```
+
+---
+
+### Test Cases with `pytest`
+
+#### Test Code
+
+```python
+import pytest
+from employee import FullTimeEmployee
+
+def test_salary_getter():
+    emp = FullTimeEmployee("Alice", 50000)
+    assert emp.salary == 50000
+
+def test_salary_setter():
+    emp = FullTimeEmployee("Alice", 50000)
+    emp.salary = 60000
+    assert emp.salary == 60000
+
+def test_salary_validation():
+    emp = FullTimeEmployee("Alice", 50000)
+    with pytest.raises(ValueError):
+        emp.salary = 25000  # Salary below 30,000 should raise ValueError
+```
+
+---
+
+### Key Points to Remember
+1. Use `@property` for controlled access to private attributes.
+2. Implement both `getter` and `setter` where needed for encapsulation and validation.
+3. Avoid using `@property` for attributes that don’t require control logic.
+4. Use `@property` with `@abstractmethod` when defining abstract properties in a base class.
+
+This provides a clean, encapsulated, and extensible design for class attributes.
+
+### Execution Order of `@property` and `@setter`
+
+The execution flow for a property and its setter in Python works like this:
+
+1. **`@property` Decorator**:  
+   - When an attribute is accessed, the method decorated with `@property` (getter) is executed.
+
+2. **`@<property_name>.setter` Decorator**:  
+   - When an attribute is assigned a value, the setter method is executed.
+
+3. **Encapsulation**:  
+   - Both the getter and setter operate on private attributes (commonly prefixed with `_`) of the object.
+
+---
+
+### Execution Flow in the Example
+
+#### The Class Code
+
+```python
+class FullTimeEmployee:
+    """
+    Represents a full-time employee.
+    """
+
+    def __init__(self, name, salary):
+        self._name = name  # Private attribute
+        self._salary = salary  # Private attribute
+
+    @property
+    def salary(self):
+        print("Getter for salary called")
+        return self._salary
+
+    @salary.setter
+    def salary(self, value):
+        print("Setter for salary called")
+        if value < 30000:
+            raise ValueError("Salary must be at least $30,000 for full-time employees.")
+        self._salary = value
+
+# Usage
+employee = FullTimeEmployee("John Doe", 50000)
+print(employee.salary)  # Access salary (getter)
+
+employee.salary = 60000  # Assign a new value (setter)
+
+try:
+    employee.salary = 25000  # Attempt to set an invalid value (setter with exception)
+except ValueError as e:
+    print(e)
+```
+
+---
+
+#### Execution Trace
+
+Here’s the order of operations:
+
+1. **Object Initialization (`__init__`)**:
+   - `self._salary = salary` initializes the private attribute `_salary` directly.  
+   - At this stage, the `@property` or setter methods are **not called** because `_salary` is directly assigned.
+
+2. **Accessing the Property (`print(employee.salary)`)**:
+   - The `@property` decorated method (`salary`) is executed.
+   - Output:
+     ```plaintext
+     Getter for salary called
+     50000
+     ```
+
+3. **Setting the Property (`employee.salary = 60000`)**:
+   - The `@salary.setter` method is executed because the `salary` attribute is assigned a new value.
+   - The setter validates the input (checks if it is >= 30000) and updates `_salary` if valid.
+   - Output:
+     ```plaintext
+     Setter for salary called
+     ```
+
+4. **Attempting to Set an Invalid Value (`employee.salary = 25000`)**:
+   - The `@salary.setter` method is called.
+   - The input fails validation (`value < 30000`), so a `ValueError` is raised.
+   - Output:
+     ```plaintext
+     Setter for salary called
+     Salary must be at least $30,000 for full-time employees.
+     ```
+
+---
+
+#### Full Execution Output
+
+```plaintext
+Getter for salary called
+50000
+Setter for salary called
+Setter for salary called
+Salary must be at least $30,000 for full-time employees.
+```
+
+---
+
+### Key Points on Execution Flow
+
+1. **Direct Access to Private Attributes**:
+   - Inside `__init__`, attributes like `_salary` are directly set without invoking the setter.
+
+2. **Getter Execution**:
+   - Accessing `employee.salary` invokes the `@property` method.
+
+3. **Setter Execution**:
+   - Assigning a value to `employee.salary` invokes the `@salary.setter` method.
+
+4. **Validation in Setter**:
+   - The setter ensures only valid values are assigned to `_salary`.
+
+---
+
+### Test the Flow Dynamically
+
+To better visualize the execution order, you can add debugging statements in the getter and setter, as shown above (`print` statements like "Getter called" or "Setter called"). This makes it easy to see when each part is executed during runtime.

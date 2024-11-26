@@ -231,3 +231,216 @@ print("Triangle Area:", calculator.calculate_area())
 - **DIP**: `AreaCalculator` depends on the abstraction `Shape`, not concrete classes like `Circle` or `Rectangle`.
 
 This design ensures that the system is easy to maintain, extend, and test, following the **SOLID** principles.
+
+Here are some **industry design principles** commonly used in software development, along with Python examples that demonstrate these principles.
+
+---
+
+## 1. **Single Responsibility Principle (SRP)**
+**Definition**: A class should have one and only one reason to change. Each class should be responsible for a single piece of functionality.
+
+**Example**:
+```python
+class Logger:
+    """
+    Handles logging responsibilities.
+    """
+    def log(self, message: str):
+        print(f"Log: {message}")
+
+class OrderProcessor:
+    """
+    Handles order processing responsibilities.
+    """
+    def __init__(self, logger: Logger):
+        self.logger = logger
+
+    def process_order(self, order_id: int):
+        # Order processing logic
+        self.logger.log(f"Processing order ID: {order_id}")
+
+# Usage
+logger = Logger()
+order_processor = OrderProcessor(logger)
+order_processor.process_order(123)
+```
+
+**Key Takeaway**: The `Logger` handles logging, while `OrderProcessor` deals with order logic, ensuring each class has a single responsibility.
+
+---
+
+## 2. **Open/Closed Principle (OCP)**
+**Definition**: Classes should be open for extension but closed for modification.
+
+**Example**:
+```python
+from abc import ABC, abstractmethod
+
+class DiscountStrategy(ABC):
+    @abstractmethod
+    def calculate_discount(self, price: float) -> float:
+        pass
+
+class NoDiscount(DiscountStrategy):
+    def calculate_discount(self, price: float) -> float:
+        return price
+
+class PercentageDiscount(DiscountStrategy):
+    def __init__(self, percentage: float):
+        self.percentage = percentage
+
+    def calculate_discount(self, price: float) -> float:
+        return price - (price * self.percentage / 100)
+
+class ShoppingCart:
+    def __init__(self, discount_strategy: DiscountStrategy):
+        self.discount_strategy = discount_strategy
+
+    def checkout(self, price: float) -> float:
+        return self.discount_strategy.calculate_discount(price)
+
+# Usage
+cart1 = ShoppingCart(NoDiscount())
+print(cart1.checkout(100))  # Output: 100
+
+cart2 = ShoppingCart(PercentageDiscount(10))
+print(cart2.checkout(100))  # Output: 90
+```
+
+**Key Takeaway**: New discount strategies can be added without modifying the existing code.
+
+---
+
+## 3. **Liskov Substitution Principle (LSP)**
+**Definition**: Subtypes should be substitutable for their base types without altering the correctness of the program.
+
+**Example**:
+```python
+class Bird:
+    def fly(self):
+        return "I can fly"
+
+class Sparrow(Bird):
+    pass
+
+class Penguin(Bird):
+    def fly(self):
+        raise NotImplementedError("Penguins cannot fly")
+
+def let_bird_fly(bird: Bird):
+    print(bird.fly())
+
+# Usage
+sparrow = Sparrow()
+let_bird_fly(sparrow)  # Output: "I can fly"
+
+penguin = Penguin()
+try:
+    let_bird_fly(penguin)  # Violates LSP: Raises NotImplementedError
+except NotImplementedError as e:
+    print(e)
+```
+
+**Fix**: Use a more appropriate design, such as introducing an abstract method for flight capability.
+
+---
+
+## 4. **Interface Segregation Principle (ISP)**
+**Definition**: A class should not be forced to implement interfaces it doesn’t use.
+
+**Example**:
+```python
+from abc import ABC, abstractmethod
+
+class Printer(ABC):
+    @abstractmethod
+    def print(self, content: str):
+        pass
+
+class Scanner(ABC):
+    @abstractmethod
+    def scan(self) -> str:
+        pass
+
+class MultiFunctionDevice(Printer, Scanner):
+    def print(self, content: str):
+        print(f"Printing: {content}")
+
+    def scan(self) -> str:
+        return "Scanned document"
+
+class SimplePrinter(Printer):
+    def print(self, content: str):
+        print(f"Printing: {content}")
+
+# Usage
+device = MultiFunctionDevice()
+device.print("Hello")
+print(device.scan())
+
+printer = SimplePrinter()
+printer.print("Simple printer")
+```
+
+**Key Takeaway**: Each interface is specific, and classes implement only the interfaces they need.
+
+---
+
+## 5. **Dependency Inversion Principle (DIP)**
+**Definition**: High-level modules should not depend on low-level modules. Both should depend on abstractions.
+
+**Example**:
+```python
+from abc import ABC, abstractmethod
+
+class NotificationService(ABC):
+    @abstractmethod
+    def send_notification(self, message: str):
+        pass
+
+class EmailNotification(NotificationService):
+    def send_notification(self, message: str):
+        print(f"Email: {message}")
+
+class SMSNotification(NotificationService):
+    def send_notification(self, message: str):
+        print(f"SMS: {message}")
+
+class UserNotifier:
+    def __init__(self, notification_service: NotificationService):
+        self.notification_service = notification_service
+
+    def notify(self, message: str):
+        self.notification_service.send_notification(message)
+
+# Usage
+email_service = EmailNotification()
+sms_service = SMSNotification()
+
+notifier = UserNotifier(email_service)
+notifier.notify("Your order has been shipped.")  # Output: "Email: Your order has been shipped."
+
+notifier = UserNotifier(sms_service)
+notifier.notify("Your order has been delivered.")  # Output: "SMS: Your order has been delivered."
+```
+
+**Key Takeaway**: `UserNotifier` depends on an abstraction (`NotificationService`), not concrete implementations.
+
+---
+
+### Additional Principles and Patterns
+1. **DRY (Don't Repeat Yourself)**:
+   - Consolidate repeated logic into reusable functions or classes.
+
+2. **KISS (Keep It Simple, Stupid)**:
+   - Avoid unnecessary complexity. Write code that is easy to understand.
+
+3. **YAGNI (You Aren't Gonna Need It)**:
+   - Implement features only when required, avoiding over-engineering.
+
+4. **Factory Pattern**:
+   - Use factories for object creation to encapsulate logic.
+
+---
+
+By following these principles, you can create a scalable, maintainable, and clean codebase that adheres to industry standards.
