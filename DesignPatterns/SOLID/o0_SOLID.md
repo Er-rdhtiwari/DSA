@@ -1,3 +1,37 @@
+### Tips to Remember SOLID Principles
+
+1. **Single Responsibility Principle (SRP)**:  
+   A class should have one job or reason to change.  
+   - Tip: *"One Class, One Responsibility."*  
+   - Example: Separate `InvoicePrinter` from `InvoiceCalculator`.
+
+2. **Open/Closed Principle (OCP)**:  
+   A class should be open for extension but closed for modification.  
+   - Tip: *"Add features, don’t change existing code."*  
+   - Example: Use strategy patterns to add new behaviors like payment methods.
+
+3. **Liskov Substitution Principle (LSP)**:  
+   Subtypes should be usable in place of their base types without breaking functionality.  
+   - Tip: *"Subclasses should behave as expected."*  
+   - Example: Avoid breaking expected behavior, like a `Square` subclass altering `Rectangle`.
+
+4. **Interface Segregation Principle (ISP)**:  
+   A class should not be forced to implement unused methods.  
+   - Tip: *"Small, specific interfaces are better than one large interface."*  
+   - Example: Split an `Animal` interface into `FlyingAnimal` and `RunningAnimal`.
+
+5. **Dependency Inversion Principle (DIP)**:  
+   Depend on abstractions, not concrete implementations.  
+   - Tip: *"Use interfaces for flexibility and decoupling."*  
+   - Example: `NotificationService` depends on `INotifier`, not directly on `EmailNotifier`.
+
+---
+
+### Mnemonic:  
+**"S.O.L.I.D: Smart Objects Lead In Design."**
+
+By ensuring **small, focused, and decoupled designs**, SOLID principles help create maintainable and scalable systems.
+
 ### **SOLID Principles Summary**
 
 The **SOLID** principles are a set of five design principles that help create software that is easier to understand, maintain, and extend. These principles promote **good object-oriented design** practices. Here's a summary based on the discussions above:
