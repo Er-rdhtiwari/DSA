@@ -183,3 +183,173 @@ print(Calculator.multiply(3, 4))  # Output: 12
 ### Key Takeaways:
 - Use **static methods** for generic, reusable operations that don’t depend on instance or class context.
 - Use **instance methods** when behavior depends on or modifies the state of an object.
+
+In Python, `class methods`, `instance methods`, and `staticmethods` are different ways to define behaviors for a class or its instances. Here’s a detailed breakdown:
+
+---
+
+### **1. Instance Methods**
+- **Definition**: Instance methods are defined with `self` as the first parameter, allowing access to instance-specific data and other instance methods.
+- **Use Case**: When you need to operate on the instance's data.
+
+#### **Advantages**
+- Access instance-specific attributes and methods.
+- Useful for operations tied to a specific instance.
+
+#### **Common Mistakes**
+- Forgetting to include `self` in the method signature.
+- Trying to access the method without an instance.
+
+#### **Code Example**
+```python
+class Example:
+    def __init__(self, value):
+        self.value = value
+
+    def double(self):
+        return self.value * 2
+```
+
+#### **Test Cases**
+```python
+def test_instance_method():
+    obj = Example(5)
+    assert obj.double() == 10
+```
+
+---
+
+### **2. Class Methods**
+- **Definition**: Defined with the `@classmethod` decorator and `cls` as the first parameter, giving access to the class itself.
+- **Use Case**: When you need to work with class-level data or create alternative constructors.
+
+#### **Advantages**
+- Operates at the class level, not instance-specific.
+- Great for defining factory methods.
+
+#### **Common Mistakes**
+- Misusing `@classmethod` when `@staticmethod` would suffice.
+- Forgetting to use `cls` as the first argument.
+
+#### **Code Example**
+```python
+class Example:
+    count = 0
+
+    def __init__(self, value):
+        self.value = value
+        Example.count += 1
+
+    @classmethod
+    def get_count(cls):
+        return cls.count
+```
+
+#### **Test Cases**
+```python
+def test_class_method():
+    obj1 = Example(5)
+    obj2 = Example(10)
+    assert Example.get_count() == 2
+```
+
+---
+
+### **3. Static Methods**
+- **Definition**: Defined with the `@staticmethod` decorator, do not take `self` or `cls` as parameters.
+- **Use Case**: For utility functions that don’t depend on instance or class data.
+
+#### **Advantages**
+- Promotes a clean separation of logic that doesn’t require instance/class access.
+- Useful for helper or utility methods.
+
+#### **Common Mistakes**
+- Misunderstanding their independence and trying to access `self` or `cls`.
+- Overuse when instance or class data is needed.
+
+#### **Code Example**
+```python
+class Example:
+    @staticmethod
+    def add(a, b):
+        return a + b
+```
+
+#### **Test Cases**
+```python
+def test_static_method():
+    assert Example.add(3, 4) == 7
+```
+
+---
+
+### **Comparison**
+
+| Feature          | Instance Method          | Class Method            | Static Method            |
+|-------------------|--------------------------|--------------------------|--------------------------|
+| **First Parameter** | `self`                 | `cls`                   | None                     |
+| **Access**        | Instance attributes/methods | Class attributes/methods | No access to instance or class |
+| **Use Case**      | Operate on instance-specific data | Operate on class-level data | General utility functions |
+
+---
+
+### **Best Practices**
+1. **Choose the right method type**:
+   - Use `instance methods` for object-specific logic.
+   - Use `class methods` for logic involving class-level concerns, like maintaining state or creating new instances.
+   - Use `staticmethods` for utility or helper functions that don’t need class or instance references.
+   
+2. **Document the method’s purpose**:
+   - Use docstrings to clarify when and why a particular type is used.
+
+3. **Avoid overusing static methods**:
+   - If most methods are static, rethink the need for a class.
+
+4. **Consistent Naming**:
+   - Use descriptive method names that indicate their scope (e.g., `create_from_dict` for a class method).
+
+---
+
+### **Full Example with All Method Types**
+```python
+class Example:
+    count = 0
+
+    def __init__(self, value):
+        self.value = value
+        Example.count += 1
+
+    def double(self):
+        """Instance method to double the value."""
+        return self.value * 2
+
+    @classmethod
+    def get_count(cls):
+        """Class method to get the number of instances."""
+        return cls.count
+
+    @staticmethod
+    def is_positive(number):
+        """Static method to check if a number is positive."""
+        return number > 0
+```
+
+#### **Test Cases**
+```python
+def test_all_methods():
+    obj1 = Example(5)
+    obj2 = Example(10)
+
+    # Test instance method
+    assert obj1.double() == 10
+    assert obj2.double() == 20
+
+    # Test class method
+    assert Example.get_count() == 2
+
+    # Test static method
+    assert Example.is_positive(3) is True
+    assert Example.is_positive(-1) is False
+```
+
+This structure adheres to Pythonic principles, ensuring your methods are concise, functional, and maintainable.
