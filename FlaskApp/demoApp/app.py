@@ -63,16 +63,20 @@ unimplemented_routes = {}
 
 @app.route("/store/<string:name>/item", methods=["GET", "POST"])
 def create_item(name):
-    data = request.get_json()
+
     if request.method == "POST":
-        for store_name in store:
-            if store_name["name"] == name:
+        data = request.get_json()
+        for store_details in store:
+            if store_details["name"] == name:
                 new_item = { "name": data["name"], "price": data["price"] }
-                store_name["item"].append(new_item)
+                store_details["item"].append(new_item)
                 return new_item, 201
         return {"message": "store notfound"}, 404
     if request.method == "GET":
-        return {"message": "Under Development"}, 404
+        for store_details in store:
+            if store_details["name"] == name:
+                return store_details, 200
+        return {"message": "Not found"}, 404
 
 
 
