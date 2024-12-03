@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+
+# docker-compose up
+#Use -d for detached mode in production environments.
+#Combine --build with --remove-orphans for a clean rebuild during updates.
+#Use --scale in load testing or horizontal scaling scenarios.
+#Leverage --abort-on-container-exit for testing tightly coupled services where a single failure should terminate the stack.
+

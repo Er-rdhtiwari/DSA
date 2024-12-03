@@ -1,0 +1,61 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+      - "5678:5678"
+    volumes:
+      - .:/app
+    command:
+      # Use the shell (`sh`) to execute the following chained commands.
+      - [ "sh", "-c",
+
+        # Install the `debugpy` package (Python debugging tool) into the `/tmp` directory.
+        # This allows temporary installation without affecting the global Python environment.
+        "pip install debugpy -t /tmp &&
+
+        # Launch the `debugpy` module from the `/tmp` directory.
+        # This module sets up the debugging environment for remote connections.
+        python /tmp/debugpy
+
+        # Wait for a remote debugger client to connect before starting the application.
+        # This ensures the app doesn't run until a debugger is ready to debug it.
+        --wait-for-client 
+
+        # Listen on all network interfaces (0.0.0.0) at port 5678 for debugger connections.
+        # The debugger client (e.g., VS Code) will connect to this port to attach for debugging.
+        --listen 0.0.0.0:5678 
+
+        # Run the Flask application as a module.
+        # The `-m flask` flag ensures that the `flask` module is executed as the app runner.
+        -m flask run 
+
+        # Disable Flask's built-in debugger.
+        # Since `debugpy` is managing debugging, Flask's debugger isn't needed.
+        --no-debugger 
+
+        # Disable the Flask auto-reloader feature.
+        # Auto-reloading spawns multiple processes, which can interfere with debugging.
+        --no-reload 
+
+        # Bind the Flask app to all network interfaces inside the container.
+        # This makes the app accessible externally via the container's exposed ports.
+        --host 0.0.0.0 
+
+        # Run the Flask application on port 80 inside the container.
+        # This is the default HTTP port, allowing users to access the app without specifying a port.
+        --port 80"
+      ]
+#      - ["sh","-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m flask run --no-debugger --no-reload --host 0.0.0.0 --port 5000"]
+#        #Allows you to debug a Flask app running inside a container using tools like VS Code or PyCharm.
+
+
+# docker compose -f docker-compose.yml docker-compose.debug.yml
+#The settings in the second file (docker-compose.debug.yml) override or extend the configurations in the first file (docker-compose.yml).
+
+
+#Use -d for detached mode in production environments.
+#Combine --build with --remove-orphans for a clean rebuild during updates.
+#Use --scale in load testing or horizontal scaling scenarios.
+#Leverage --abort-on-container-exit for testing tightly coupled services where a single failure should terminate the stack.
+
