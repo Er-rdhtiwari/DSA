@@ -1098,3 +1098,110 @@ process_payment(payment2)  # Output: Processing PayPal payment.
 - **Run-time Polymorphism**: Allows subclasses to override parent class methods, enabling dynamic behavior.
 - Both forms improve **flexibility**, **reusability**, and **maintainability**, essential for scalable software design.
 
+In Python's Object-Oriented Programming (OOP), **public**, **protected**, and **private** attributes and methods are used to manage the **accessibility** and **encapsulation** of class members. These concepts help you control how class data and behaviors are accessed or modified, ensuring proper data hiding and security.
+
+Unlike some languages (like Java or C++), Python does not enforce strict access control. Instead, it uses naming conventions to indicate the intended level of access.
+
+---
+
+## 🔓 **Public Members**
+
+- **Definition**: Members (attributes and methods) that can be accessed from **anywhere** — within the class, outside the class, or by derived classes.
+- **Naming Convention**: No special naming is required.
+  
+### Example:
+
+```python
+class Car:
+    def __init__(self, brand):
+        self.brand = brand  # Public attribute
+
+    def display_brand(self):  # Public method
+        print(f"The car brand is {self.brand}")
+
+car = Car("Toyota")
+print(car.brand)  # Accessible outside the class
+car.display_brand()  # Accessible outside the class
+```
+
+---
+
+## 🔐 **Protected Members**
+
+- **Definition**: Members that should be accessible within the class and by **subclasses** (derived classes), but not by external code.
+- **Naming Convention**: Prefix the member name with a **single underscore** (`_`).
+
+⚠️ In Python, this is just a **convention**. The member is still accessible outside the class, but it indicates to developers that it's intended for internal use.
+
+### Example:
+
+```python
+class Car:
+    def __init__(self, brand, mileage):
+        self._brand = brand        # Protected attribute
+        self._mileage = mileage    # Protected attribute
+
+    def _display_info(self):       # Protected method
+        print(f"Brand: {self._brand}, Mileage: {self._mileage}")
+
+class SportsCar(Car):
+    def display(self):
+        self._display_info()  # Accessible in subclass
+
+car = SportsCar("Ferrari", 15000)
+car.display()          # Accessible via subclass
+print(car._brand)      # Possible, but not recommended
+```
+
+---
+
+## 🔒 **Private Members**
+
+- **Definition**: Members that can only be accessed within the class in which they are defined.
+- **Naming Convention**: Prefix the member name with **double underscores** (`__`).
+
+🔹 Python performs **name mangling** for private members, making them harder to access from outside the class. The member name is internally transformed to `_ClassName__memberName`.
+
+### Example:
+
+```python
+class Car:
+    def __init__(self, brand, mileage):
+        self.__brand = brand       # Private attribute
+        self.__mileage = mileage   # Private attribute
+
+    def __display_info(self):      # Private method
+        print(f"Brand: {self.__brand}, Mileage: {self.__mileage}")
+
+    def show_details(self):
+        self.__display_info()  # Accessible within the class
+
+car = Car("BMW", 20000)
+car.show_details()         # Works fine
+# print(car.__brand)       # AttributeError: 'Car' object has no attribute '__brand'
+# car.__display_info()     # AttributeError: 'Car' object has no attribute '__display_info'
+
+# Access using name mangling (not recommended):
+print(car._Car__brand)     # Works, but should be avoided
+```
+
+---
+
+## 📝 **Summary Table**
+
+| Access Modifier | Naming Convention    | Accessibility                         |
+|-----------------|----------------------|---------------------------------------|
+| **Public**      | `name`               | Everywhere (class, subclass, outside) |
+| **Protected**   | `_name`              | Class and subclass only               |
+| **Private**     | `__name`             | Class only (with name mangling)       |
+
+---
+
+## 💡 **Best Practices**
+
+1. **Use Public Members** by default unless you have a strong reason for restricting access.
+2. **Use Protected Members** to indicate that a member is meant for internal use within the class or subclasses.
+3. **Use Private Members** when you want to strictly limit access to class internals and avoid accidental modifications.
+4. **Respect Conventions**: Even though Python allows access to protected and private members through workarounds, it's good practice to respect the naming conventions.
+
+This ensures better **encapsulation**, **data integrity**, and **readability** of your code.
